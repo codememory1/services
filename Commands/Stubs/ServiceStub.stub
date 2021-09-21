@@ -1,0 +1,17 @@
+<?php
+
+namespace {namespace};
+
+use Codememory\Components\Services\AbstractService;
+
+/**
+ * Class {className}
+ *
+ * @package {namespace}
+ */
+class {className} extends AbstractService
+{
+
+
+
+}

@@ -1,0 +1,29 @@
+{
+    "name": "codememory/services",
+    "description": "Package alias codememory/model",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Danil",
+            "email": "kostynd1@gmail.com"
+        }
+    ],
+    "require": {
+        "codememory/config": "2.0",
+        "codememory/console": "^1.0",
+        "codememory/event-dispatcher": "^1.0",
+        "codememory/fs": "^1.1",
+        "codememory/global-config": "^1.1",
+        "codememory/profiling": "^2.2",
+        "codememory/service-provider": "^1.0",
+        "spatie/backtrace": "^1.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Codememory\\Components\\Services\\": ""
+        }
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
