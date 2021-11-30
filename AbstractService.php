@@ -2,6 +2,7 @@
 
 namespace Codememory\Components\Services;
 
+use Codememory\Components\Database\Pack\DatabasePack;
 use Codememory\Components\Event\Dispatcher;
 use Codememory\Components\Event\EventDispatcher;
 use Codememory\Components\Event\Exceptions\EventExistException;
@@ -9,6 +10,7 @@ use Codememory\Components\Event\Exceptions\EventNotExistException;
 use Codememory\Components\Event\Exceptions\EventNotImplementInterfaceException;
 use Codememory\Components\Event\Interfaces\EventDataInterface;
 use Codememory\Components\Event\Interfaces\EventDispatcherInterface;
+use Codememory\Components\IndividualTasks\AbstractJob;
 use Codememory\Components\Profiling\Exceptions\BuilderNotCurrentSectionException;
 use Codememory\Components\Profiling\ReportCreators\EventsReportCreator;
 use Codememory\Components\Profiling\Resource;
@@ -51,9 +53,15 @@ abstract class AbstractService
     private Dispatcher $dispatcher;
 
     /**
-     * @param ServiceProviderInterface $serviceProvider
+     * @var DatabasePack
      */
-    public function __construct(ServiceProviderInterface $serviceProvider)
+    private DatabasePack $databasePack;
+
+    /**
+     * @param ServiceProviderInterface $serviceProvider
+     * @param DatabasePack             $databasePack
+     */
+    public function __construct(ServiceProviderInterface $serviceProvider, DatabasePack $databasePack)
     {
 
         $this->serviceProvider = $serviceProvider;
@@ -61,6 +69,7 @@ abstract class AbstractService
         $this->service = new Service();
         $this->eventDispatcher = new EventDispatcher();
         $this->dispatcher = new Dispatcher();
+        $this->databasePack = $databasePack;
 
     }
 
@@ -105,6 +114,26 @@ abstract class AbstractService
         $this->dispatcher->dispatch($event);
 
         $this->eventProfiling($event, $microTime);
+
+    }
+
+    /**
+     * =>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>
+     * Send a task to the queue
+     * <=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=
+     *
+     * @param string $job
+     * @param array  $parameters
+     *
+     * @return void
+     */
+    protected function dispatchJob(string $job, array $parameters = []): void
+    {
+
+        /** @var AbstractJob $jobObject */
+        $jobObject = new $job($this->databasePack, $this->serviceProvider);
+
+        $jobObject->dispatch($parameters);
 
     }
 
