@@ -2,6 +2,8 @@
 
 namespace Codememory\Components\Services;
 
+use Codememory\Components\Database\Orm\Interfaces\EntityManagerInterface;
+use Codememory\Components\Database\Orm\Repository\AbstractEntityRepository;
 use Codememory\Components\Database\Pack\DatabasePack;
 use Codememory\Components\Event\Dispatcher;
 use Codememory\Components\Event\EventDispatcher;
@@ -58,6 +60,11 @@ abstract class AbstractService
     private DatabasePack $databasePack;
 
     /**
+     * @var EntityManagerInterface
+     */
+    private EntityManagerInterface $em;
+
+    /**
      * @param ServiceProviderInterface $serviceProvider
      * @param DatabasePack             $databasePack
      */
@@ -70,6 +77,7 @@ abstract class AbstractService
         $this->eventDispatcher = new EventDispatcher();
         $this->dispatcher = new Dispatcher();
         $this->databasePack = $databasePack;
+        $this->em = $this->databasePack->getEntityManager();
 
     }
 
@@ -156,10 +164,41 @@ abstract class AbstractService
 
         /** @var AbstractService $service */
         $service = $serviceReflector->newInstanceArgs([
-            $this->serviceProvider
+            $this->serviceProvider,
+            $this->databasePack
         ]);
 
         return $service;
+
+    }
+
+    /**
+     * =>=>=>=>=>=>=>=>=>=>=>=>=>=>
+     * Returns Entity manager
+     * <=<=<=<=<=<=<=<=<=<=<=<=<=<=
+     *
+     * @return EntityManagerInterface
+     */
+    protected function getEntityManager(): EntityManagerInterface
+    {
+
+        return $this->em;
+
+    }
+
+    /**
+     * =>=>=>=>=>=>=>=>=>=>=>=>=>=>
+     * Get an entity repository
+     * <=<=<=<=<=<=<=<=<=<=<=<=<=<=
+     *
+     * @param string $entity
+     *
+     * @return AbstractEntityRepository
+     */
+    protected function getRepository(string $entity): AbstractEntityRepository
+    {
+
+        return $this->getEntityManager()->getRepository($entity);
 
     }
 
